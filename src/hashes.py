@@ -1,23 +1,16 @@
-import time
-import hashlib
-import bcrypt
+"""Hash function for hashtable."""
 
-key = b'Hello World!'
-
-sha = hashlib.sha3_256(key).hexdigest()
-print(sha)
-xha = '0x' + sha
-print(xha)
-print(int(xha, 16))
+key = 'Hello World!'
 
 
 def djb2(key):
+    _key = bytes(key, encoding='UTF-8')
     hash_value = 5381
 
-    for char in key:
-        hash_value = ((hash_value << 5) + hash_value) + char
+    for char in _key:
+        hash_value = ((hash_value << 5) + (hash_value >> 2)) + char ^ hash_value
     return hash_value
 
 
-print(djb2(key))
-print(f'{int(sha, 16)}')
+if __name__ == '__main__':
+    print(djb2(key))

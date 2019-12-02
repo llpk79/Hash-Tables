@@ -1,6 +1,7 @@
 """
 Linked List hash table key/value pair
 """
+from hashes import djb2
 
 
 class LinkedPair:
@@ -16,9 +17,11 @@ class HashTable:
     that accepts string keys
     """
 
-    def __init__(self, capacity):
+    def __init__(self, capacity=8):
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
+        self.max_count = self.capacity * 4
+        self.count = 0
 
     def _hash(self, key):
         """
@@ -26,7 +29,7 @@ class HashTable:
 
         You may replace the Python hash with DJB2 as a stretch goal.
         """
-        return hash(key)
+        return djb2(key)
 
     def _hash_djb2(self, key):
         """
@@ -51,7 +54,23 @@ class HashTable:
 
         Fill this in.
         """
-        pass
+        _key = self._hash_mod(key)
+        if self.storage[_key]:
+            curr = self.storage[_key]
+            while True:
+                if curr.key == key:
+                    curr.value = value
+                    return
+                if curr.next:
+                    curr = curr.next
+                else:
+                    break
+            curr.next = LinkedPair(key, value)
+        else:
+            self.storage[_key] = LinkedPair(key, value)
+        self.count += 1
+        if self.count >= self.max_count:
+            self.resize()
 
     def remove(self, key):
         """
@@ -61,7 +80,21 @@ class HashTable:
 
         Fill this in.
         """
-        pass
+        index = self._hash_mod(key)
+        if not self.storage[index]:
+            print(f"KeyError: {key} Does not exist.")
+            return
+        curr = self.storage[index]
+        if curr.key == key:
+            self.storage[index] = curr.next
+            self.count -= 1
+            return
+        while curr.next:
+            if curr.next.key == key:
+                curr.next = curr.next.next
+                self.count -= 1
+                return
+        print(f'KeyError: {key} Does not exist.')
 
     def retrieve(self, key):
         """
@@ -71,7 +104,13 @@ class HashTable:
 
         Fill this in.
         """
-        pass
+        index = self._hash_mod(key)
+        curr = self.storage[index]
+        while curr:
+            if curr.key == key:
+                return curr.value
+            curr = curr.next
+        print(f'KeyError: {key} Does not exist.')
 
     def resize(self):
         """
@@ -80,7 +119,15 @@ class HashTable:
 
         Fill this in.
         """
-        pass
+        self.capacity *= 2
+        new_storage = [None] * self.capacity
+        for i in self.storage:
+            curr = i
+            while curr:
+                index = self._hash_mod(curr.key)
+                new_storage[index] = LinkedPair(curr.key, curr.value)
+                curr = curr.next
+        self.storage = new_storage
 
 
 if __name__ == "__main__":
