@@ -54,9 +54,9 @@ class HashTable:
 
         Fill this in.
         """
-        _key = self._hash_mod(key)
-        if self.storage[_key]:
-            curr = self.storage[_key]
+        index = self._hash_mod(key)
+        if self.storage[index]:
+            curr = self.storage[index]
             while True:
                 if curr.key == key:
                     curr.value = value
@@ -67,7 +67,7 @@ class HashTable:
                     break
             curr.next = LinkedPair(key, value)
         else:
-            self.storage[_key] = LinkedPair(key, value)
+            self.storage[index] = LinkedPair(key, value)
         self.count += 1
         if self.count >= self.max_count:
             self.resize()
