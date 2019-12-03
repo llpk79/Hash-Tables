@@ -13,15 +13,15 @@ class LinkedPair:
 
 class HashTable:
     """
-    A hash table that with `capacity` buckets
-    that accepts string keys
+    A hash table with `capacity` buckets that accepts string keys.
     """
 
-    def __init__(self, capacity=8):
-        self.capacity = capacity  # Number of buckets in the hash table
+    def __init__(self, capacity=8, load_factor=.7):
+        self.capacity = capacity  # Number of buckets in the hash table.
         self.storage = [None] * capacity
-        self.max_count = self.capacity * 4
-        self.count = 0
+        self.load_factor = load_factor
+        self.max_count = self.capacity * self.load_factor
+        self.count = 0  # Number of keys in hash table.
 
     def _hash(self, key):
         """
@@ -51,8 +51,6 @@ class HashTable:
         Store the value with the given key.
 
         Hash collisions should be handled with Linked List Chaining.
-
-        Fill this in.
         """
         index = self._hash_mod(key)
         if self.storage[index]:
@@ -120,6 +118,7 @@ class HashTable:
         Fill this in.
         """
         self.capacity *= 2
+        self.max_count = self.capacity * self.load_factor
         new_storage = [None] * self.capacity
         for i in self.storage:
             curr = i
